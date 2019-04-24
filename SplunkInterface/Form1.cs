@@ -32,8 +32,20 @@ namespace SplunkInterface
 
             ListBoxResults.Text = "Running";
            await Program.run(textBoxQuery.Text.ToString(), ListBoxResults);
+
+
+            //latest value
             //index=main | stats latest(_time) as _time, latest(WIN_D88BDT7F7NO_Memory_Available MBytes)
+
+
+            //value over time
             //index=main|bucket _time span=5m | stats avg(WIN_D88BDT7F7NO_Memory_Available MBytes) as Value by _time
+
+
+
+            //value in time
+
+            //index=main earliest="04/24/2019:12:29:00"  latest="04/24/2019:12:31:00" | stats avg(WIN_D88BDT7F7NO_Memory_Available MBytes)
             //index=main earliest=-24h@h latest=now | fields + WIN_D88BDT7F7NO_Memory_Available MBytes
         }
     }
