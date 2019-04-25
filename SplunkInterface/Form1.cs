@@ -35,9 +35,23 @@ namespace SplunkInterface
 
             if (Program.client.loggedIn)
             {
-                ListBoxResults.Items.Add("Running");
-                await Program.client.search(textBoxQuery.Text.ToString(), ListBoxResults);
+                try { 
+                 ListBoxResults.Items.Add("Running");
+                 await Program.client.search(textBoxQuery.Text.ToString(), ListBoxResults);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    Console.WriteLine("Attempting to reconnect");
+                    await Program.client.prep("Administrator", "pa$$word1", "192.168.1.103", "8089");
+                    await Program.client.search(textBoxQuery.Text.ToString(), ListBoxResults);
+                }
             }
+
+
+
+
+            // VARIABLE STUFF: INDEX, WIN_D88DT7F7NO_memory_available Mbytes, earliest and lastest times
 
             //latest value (current)
             //index=main | stats latest(_time) as _time, latest(WIN_D88BDT7F7NO_Memory_Available MBytes) as Value
@@ -53,7 +67,7 @@ namespace SplunkInterface
 
 
             //value in time (historical) closest to latest
-           // index = main earliest = "04/24/2019:12:16:00"  latest = "04/24/2019:12:20:00" | stats latest(WIN_D88BDT7F7NO_Memory_Available MBytes) as Value
+            // index = main earliest = "04/24/2019:12:16:00"  latest = "04/24/2019:12:20:00" | stats latest(_time) as _time, latest(WIN_D88BDT7F7NO_Memory_Available MBytes) as Value
 
 
             //index=main earliest=-24h@h latest=now | fields + WIN_D88BDT7F7NO_Memory_Available MBytes as Value
