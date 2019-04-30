@@ -1,0 +1,8 @@
+﻿enum SearchType
+{
+    VERIFY_CONNECTION = 0,
+    GET_CURRENT_VALUE = 1,
+    GET_HISTORICAL_VALUE = 2,
+    GET_TREND_DATA = 3,
+    OPEN_QUERY = 4
+}

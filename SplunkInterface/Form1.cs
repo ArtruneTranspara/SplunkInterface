@@ -16,6 +16,7 @@ namespace SplunkInterface
         {
            
             InitializeComponent();
+            comboBoxCallType.SelectedIndex = 0;
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -30,26 +31,44 @@ namespace SplunkInterface
 
         private async void ButtonRun_Click(object sender, EventArgs e)
         {
-
-           
-
-            if (Program.client.loggedIn)
+            ListBoxResults.Items.Clear();
+            try
             {
-                try { 
-                 ListBoxResults.Items.Add("Running");
-                 await Program.client.search(textBoxQuery.Text.ToString(), ListBoxResults);
+                 SearchType searchType = (SearchType)comboBoxCallType.SelectedIndex;
+                
+                 switch(searchType)
+                  {
+                    case SearchType.OPEN_QUERY:
+                        var res = await Program.client.OpenQuery(textBoxQuery.Text.ToString());
+                        SplunkClient.PrintResults(res, ListBoxResults);
+                        break;
+                    case SearchType.VERIFY_CONNECTION:
+                        var verify = await Program.client.VerifyConnectionAsync();
+                        MessageBox.Show(verify ? "Connection succesful": "Connection failed");
+                        break;
+                    case SearchType.GET_CURRENT_VALUE:
+                        res = await Program.client.GetCurrentValueAsync(textBoxQuery.Text.ToString());
+                        SplunkClient.PrintResults(res, ListBoxResults);
+                        break;
+                    case SearchType.GET_HISTORICAL_VALUE:
+                        res = await Program.client.getHistoricalValueAsync(textBoxQuery.Text.ToString(), textBoxEarliestDate.Text, textBoxLatestDate.Text);
+                        SplunkClient.PrintResults(res, ListBoxResults);
+                        break;
+                    case SearchType.GET_TREND_DATA:
+                        res = await Program.client.getTrendDataAsync(textBoxQuery.Text.ToString(), textBoxEarliestDate.Text, textBoxLatestDate.Text, textBoxBucketSize.Text);
+                        SplunkClient.PrintResults(res, ListBoxResults);
+                        break;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    Console.WriteLine("Attempting to reconnect");
-                    await Program.client.prep("Administrator", "pa$$word1", "192.168.1.103", "8089");
-                    await Program.client.search(textBoxQuery.Text.ToString(), ListBoxResults);
-                }
-            }
+     
 
 
-
+             }
+             catch (Exception ex)
+             {
+                await Program.client.LoginAsync();
+                Console.WriteLine(ex);
+             }
+            
 
             // VARIABLE STUFF: INDEX, WIN_D88DT7F7NO_memory_available Mbytes, earliest and lastest times
 
@@ -71,6 +90,12 @@ namespace SplunkInterface
 
 
             //index=main earliest=-24h@h latest=now | fields + WIN_D88BDT7F7NO_Memory_Available MBytes as Value
+        }
+
+        private void comboBoxCallType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ListBoxResults.Items.Clear();
+            ListBoxResults.Items.Add("");
         }
     }
 }

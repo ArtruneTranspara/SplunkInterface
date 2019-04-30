@@ -19,18 +19,14 @@ namespace SplunkInterface
         [STAThread]
         static void Main()
         {
-           Application.EnableVisualStyles();
-           Application.SetCompatibleTextRenderingDefault(false);
-           Application.Run(new Form1());
-
+            client.SetSecurity();
+            client.LoginAsync().Wait();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
         }
 
        public static SplunkClient client = new SplunkClient("Administrator", "pa$$word1", "192.168.1.103", "8089");
 
-
-
-
     }
-
-
 }
